@@ -1,0 +1,6 @@
+requests
+psutil
+colorama
+pyfiglet
+termcolor
+distro
