@@ -11,6 +11,8 @@ import subprocess
 import requests
 import json
 import time
+import psutil
+import shutil
 
 # ====== Load Config ======
 CONFIG_FILE = "config.json"
@@ -58,10 +60,84 @@ def banner():
 
 # ====== Features ======
 def system_info():
+   import psutil
+import shutil
+
+def os_banner():
+    os_name = platform.system().lower()
+
+    if "windows" in os_name:
+        return color(r"""
+██████╗ ██╗   ██╗██████╗ ██╗     ██╗██╗  ██╗
+██╔══██╗██║   ██║██╔══██╗██║     ██║██║ ██╔╝
+██████╔╝██║   ██║██████╔╝██║     ██║█████╔╝ 
+██╔═══╝ ██║   ██║██╔══██╗██║     ██║██╔═██╗ 
+██║     ╚██████╔╝██████╔╝███████╗██║██║  ██╗
+╚═╝      ╚═════╝ ╚═════╝ ╚══════╝╚═╝╚═╝  ╚═╝
+        """, "cyan")
+
+    elif "linux" in os_name:
+        # cek distro
+        try:
+            import distro
+            dist = distro.id().lower()
+        except:
+            dist = "linux"
+
+        if "kali" in dist:
+            return color(r"""
+███╗   ███╗██╗███████╗
+████╗ ████║██║██╔════╝
+██╔████╔██║██║█████╗  
+██║╚██╔╝██║██║██╔══╝  
+██║ ╚═╝ ██║██║███████╗
+╚═╝     ╚═╝╚═╝╚══════╝
+
+        """, "blue")
+
+        elif "ubuntu" in dist:
+            return color(r"""
+██╗  ██╗ █████╗ ██╗     ██╗
+██║ ██╔╝██╔══██╗██║     ██║
+█████╔╝ ███████║██║     ██║
+██╔═██╗ ██╔══██║██║     ██║
+██║  ██╗██║  ██║███████╗██║
+╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝
+        """, "white")
+        else:
+            return color(r"""
+██████╗ ███████╗██╗  ██╗
+██╔══██╗██╔════╝╚██╗██╔╝
+██████╔╝█████╗   ╚███╔╝ 
+██╔══██╗██╔══╝   ██╔██╗ 
+██║  ██╗███████╗██╔╝ ██╗
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+        """, "green")
+
+    else:
+        return color("[?] OS Tidak dikenali", "red")
+
+
+def system_info():
     print(color("\n[+] Info Sistem", "yellow"))
+    print(os_banner())  # tampilkan banner sesuai OS
+
+    # info dasar
     print("OS :", platform.system(), platform.release())
     print("Versi Python:", platform.python_version())
     print("User:", os.getenv("USER") or os.getenv("USERNAME"))
+
+    # RAM info
+    ram = psutil.virtual_memory()
+    print(f"RAM Total   : {ram.total // (1024**3)} GB")
+    print(f"RAM Tersisa : {ram.available // (1024**3)} GB")
+
+    # Storage info
+    total, used, free = shutil.disk_usage("/")
+    print(f"Storage Total: {total // (1024**3)} GB")
+    print(f"Storage Free : {free // (1024**3)} GB")
+
+
 
 def hashing_tools():
     text = input("Masukkan teks: ")
