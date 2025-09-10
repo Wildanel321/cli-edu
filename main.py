@@ -242,6 +242,53 @@ def virus_total():
             print("Tidak ada hasil.")
     except Exception as e:
         print(color(f"Error: {e}", "red"))
+import hashlib
+
+# 🔹 Binary Tools
+def binary_tools():
+    print("\n[ Binary Tools ]")
+    print("[1] Text → Binary")
+    print("[2] Binary → Text")
+    choice = input("Pilih: ")
+
+    if choice == "1":
+        text = input("Masukkan teks: ")
+        binary = ' '.join(format(ord(c), '08b') for c in text)
+        print("Binary:", binary)
+    elif choice == "2":
+        binary = input("Masukkan binary (pisah spasi): ")
+        try:
+            text = ''.join(chr(int(b, 2)) for b in binary.split())
+            print("Teks:", text)
+        except:
+            print("❌ Format binary salah")
+    else:
+        print("Pilihan tidak valid")
+
+# 🔹 SHA256 Tools
+def sha256_tools():
+    print("\n[ SHA256 Tools ]")
+    print("[1] Hash Text")
+    print("[2] Hash File")
+    choice = input("Pilih: ")
+
+    if choice == "1":
+        text = input("Masukkan teks: ")
+        hashed = hashlib.sha256(text.encode()).hexdigest()
+        print("SHA256:", hashed)
+    elif choice == "2":
+        file = input("Masukkan path file: ")
+        try:
+            with open(file, "rb") as f:
+                file_hash = hashlib.sha256()
+                while chunk := f.read(4096):
+                    file_hash.update(chunk)
+            print("SHA256:", file_hash.hexdigest())
+        except FileNotFoundError:
+            print("❌ File tidak ditemukan")
+    else:
+        print("Pilihan tidak valid")
+
 
 def caesar_cipher():
     teks = input("Masukkan teks: ")
@@ -295,7 +342,9 @@ def menu():
         "12": virus_total,
         "13": caesar_cipher,
         "14": list_files,
-        "15": matrix_rain
+        "15": matrix_rain,
+        "17": binary_tools,
+        "18": sha256_tools
     }
     while True:
         banner()
@@ -308,6 +357,7 @@ def menu():
 [6] Password Gen       [14] List Files
 [7] Password Strength  [15] Matrix Rain
 [8] UUID Generator     [16] Keluar
+[17] Binary Tools      [18] SHA256 Tools
 """, "cyan"))
         pilih = input("Pilih menu: ")
         if pilih == "16":
