@@ -40,8 +40,12 @@ Dibuat dengan Python, tools ini dilengkapi fitur hashing, enkripsi sederhana, pa
 
 - 📁 **List Files & Size**  
 
-- 💻 **Matrix Rain Effect (Hacker Style)**  
+- 💻 **Matrix Rain Effect (Hacker Style)**
 
+- 💾 **Binary Tools** (Text ↔ Binary)
+  
+- 🔒 **SHA256 Tools** (Hash teks & file)
+    
 ---
 
 ## 📦 Instalasi
