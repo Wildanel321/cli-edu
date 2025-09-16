@@ -52,5 +52,5 @@ Dibuat dengan Python, tools ini dilengkapi fitur hashing, enkripsi sederhana, pa
 
 1. Clone repository ini:
    ```bash
-   git clone https://github.com/username/cyber-edu-cli.git
+   git clone https://github.com/Wildanel321/cyber-edu-cli.git
    cd cyber-edu-cli
