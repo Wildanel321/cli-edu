@@ -1,15 +1,20 @@
 {
   "username": "CyberAgent",
-  "xp": 30,
-  "level": 1,
-  "sound_enabled": false,
-  "quizzes_completed": 1,
-  "quiz_high_score": 20,
-  "tools_used": 2,
+  "xp": 515,
+  "level": 3,
+  "sound_enabled": true,
+  "quizzes_completed": 5,
+  "quiz_high_score": 100,
+  "tools_used": 34,
   "badges": [
     "password_sentinel",
     "cyber_scholar",
-    "quiz_cadet"
+    "quiz_cadet",
+    "first_blood",
+    "port_hunter",
+    "quiz_master",
+    "subnet_guru",
+    "crypto_adept"
   ],
   "docs_read": [
     "linux"

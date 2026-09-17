@@ -17,6 +17,27 @@ import math
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 
+# ====== Enable ANSI Colors on Windows CMD ======
+if platform.system() == "Windows":
+    os.system("") # Standard Windows trick to activate VT100 ANSI processing in cmd.exe
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        hStdOut = kernel32.GetStdHandle(-11) # STD_OUTPUT_HANDLE = -11
+        mode = ctypes.c_ulong()
+        if kernel32.GetConsoleMode(hStdOut, ctypes.byref(mode)):
+            mode.value |= 0x0004 # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+            kernel32.SetConsoleMode(hStdOut, mode)
+    except Exception:
+        pass
+
+# Optional Colorama init
+try:
+    import colorama
+    colorama.init(autoreset=False)
+except ImportError:
+    pass
+
 # Set UTF-8 encoding for stdout/stdin on Windows terminals
 if hasattr(sys.stdout, 'reconfigure'):
     try:
@@ -77,8 +98,8 @@ def color(txt, c):
     return f"{colors.get(c, '')}{txt}{colors['reset']}"
 
 def play_beep(freq=1200, duration=80):
-    profile = load_profile()
-    if profile.get("sound_enabled", False):
+    p = load_profile()
+    if p.get("sound_enabled", False):
         if winsound and platform.system() == "Windows":
             try:
                 winsound.Beep(freq, duration)
@@ -105,15 +126,15 @@ DEFAULT_PROFILE = {
 }
 
 ALL_BADGES = {
-    "first_blood": {"name": "🎯 First Blood", "desc": "Menjalankan tool pertama di Cyber Edu"},
-    "quiz_cadet": {"name": "🎓 Quiz Cadet", "desc": "Menyelesaikan kuis keamanan siber pertamamu"},
-    "quiz_master": {"name": "🧠 Quiz Master", "desc": "Mendapatkan skor sempurna (100%) pada Cyber Quiz"},
-    "password_sentinel": {"name": "🛡️ Password Sentinel", "desc": "Menganalisis kekuatan kata sandi dengan health checker"},
-    "port_hunter": {"name": "🔍 Port Hunter", "desc": "Melakukan port scan jaringan"},
-    "crypto_adept": {"name": "🔐 Crypto Adept", "desc": "Menggunakan tools enkripsi/dekripsi/hashing"},
-    "subnet_guru": {"name": "🌐 Subnet Guru", "desc": "Melakukan kalkulasi subnetting CIDR"},
-    "cyber_scholar": {"name": "📚 Cyber Scholar", "desc": "Membaca dokumentasi di Terminal Wiki"},
-    "hokage_sec": {"name": "🌀 Hokage Sec", "desc": "Mencapai Level 5+ dalam perjalanan cybersecurity"}
+    "first_blood": {"name": "[First Blood]", "desc": "Menjalankan tool pertama di Cyber Edu"},
+    "quiz_cadet": {"name": "[Quiz Cadet]", "desc": "Menyelesaikan kuis keamanan siber pertamamu"},
+    "quiz_master": {"name": "[Quiz Master]", "desc": "Mendapatkan skor sempurna (100%) pada Cyber Quiz"},
+    "password_sentinel": {"name": "[Password Sentinel]", "desc": "Menganalisis kekuatan kata sandi dengan health checker"},
+    "port_hunter": {"name": "[Port Hunter]", "desc": "Melakukan port scan jaringan"},
+    "crypto_adept": {"name": "[Crypto Adept]", "desc": "Menggunakan tools enkripsi/dekripsi/hashing"},
+    "subnet_guru": {"name": "[Subnet Guru]", "desc": "Melakukan kalkulasi subnetting CIDR"},
+    "cyber_scholar": {"name": "[Cyber Scholar]", "desc": "Membaca dokumentasi di Terminal Wiki"},
+    "hokage_sec": {"name": "[Hokage Sec]", "desc": "Mencapai Level 5+ dalam perjalanan cybersecurity"}
 }
 
 def get_level_info(xp):
@@ -171,7 +192,7 @@ def add_xp(amount, reason="Aktivitas Belajar"):
     play_beep(1500, 60)
 
     if new_lvl > old_lvl:
-        print(color(f"\n🎉 LEVEL UP! Kamu sekarang Level {new_lvl}: {title}! 🎉", "yellow"))
+        print(color(f"\n[!] LEVEL UP! Kamu sekarang Level {new_lvl}: {title}!", "yellow"))
         play_beep(2000, 120)
         if new_lvl >= 5:
             unlock_badge("hokage_sec")
@@ -185,7 +206,7 @@ def unlock_badge(badge_id):
         badges.append(badge_id)
         p["badges"] = badges
         b_info = ALL_BADGES[badge_id]
-        print(color(f"\n🏆 BADGE UNLOCKED: {b_info['name']} - {b_info['desc']}", "yellow"))
+        print(color(f"\n[+] BADGE UNLOCKED: {b_info['name']} - {b_info['desc']}", "yellow"))
         play_beep(1800, 100)
         save_profile(p)
 
@@ -205,40 +226,39 @@ CYBER_QUOTES = [
 
 def cyber_quote_generator():
     q, author = random.choice(CYBER_QUOTES)
-    print(color("\n╭─────────────────────────────────────────────────────────────────────────────╮", "cyan"))
-    print(f"│ {color('💬 CYBER WISDOM OF THE DAY', 'yellow'):<83}│")
-    print(f"│ {color('"' + q + '"', 'white'):<83}│")
-    print(f"│ {color('— ' + author, 'green'):>83}│")
-    print(color("╰─────────────────────────────────────────────────────────────────────────────╯", "cyan"))
+    print(color("\n+-----------------------------------------------------------------------------+", "cyan"))
+    print(f"| {color('[*] CYBER WISDOM OF THE DAY', 'yellow')}")
+    print(f"| {color('"' + q + '"', 'white')}")
+    print(f"| {color('-- ' + author, 'green')}")
+    print(color("+-----------------------------------------------------------------------------+", "cyan"))
 
 # ====== Boot Sequence Animation ======
 def cyber_boot_animation():
     print(color("\033[2J\033[H", "reset"), end="") # Clear terminal
     steps = [
-        ("INITIALIZING CYBER-EDU KERNEL v2.5", 0.08),
-        ("CHECKING CRYPTOGRAPHIC ACCELERATORS (AES-NI / SHA-EXT)", 0.06),
-        ("INITIALIZING SOCKET LAYER & PACKET FILTERS", 0.06),
-        ("LOADING THREAT INTELLIGENCE SIGNATURES", 0.07),
-        ("SECURING TERMINAL STREAMS & PROFILES", 0.05),
-        ("MOUNTING SANDBOX VIRTUAL ENVIRONMENT", 0.06)
+        ("INITIALIZING CYBER-EDU KERNEL v2.5", 0.07),
+        ("CHECKING CRYPTOGRAPHIC ACCELERATORS (AES-NI / SHA-EXT)", 0.05),
+        ("INITIALIZING SOCKET LAYER & PACKET FILTERS", 0.05),
+        ("LOADING THREAT INTELLIGENCE SIGNATURES", 0.06),
+        ("SECURING TERMINAL STREAMS & PROFILES", 0.04),
+        ("MOUNTING SANDBOX VIRTUAL ENVIRONMENT", 0.05)
     ]
     
-    print(color("┌──────────────────────────────────────────────────────────┐", "green"))
-    print(color("│               CYBER EDU SYSTEM BOOT v2.5                 │", "green"))
-    print(color("└──────────────────────────────────────────────────────────┘", "green"))
+    print(color("+----------------------------------------------------------+", "green"))
+    print(color("|               CYBER EDU SYSTEM BOOT v2.5                 |", "green"))
+    print(color("+----------------------------------------------------------+", "green"))
 
     for text, delay in steps:
         time.sleep(delay)
         print(f" {color('[ OK ]', 'green')} {text}")
         play_beep(1000 + int(delay * 5000), 20)
 
-    # Progress bar effect
     print("\n " + color("Loading Modules: [", "cyan"), end="", flush=True)
     for _ in range(25):
-        time.sleep(0.015)
-        print(color("█", "green"), end="", flush=True)
+        time.sleep(0.012)
+        print(color("=", "green"), end="", flush=True)
     print(color("] 100% READY\n", "cyan"))
-    time.sleep(0.2)
+    time.sleep(0.15)
 
 def banner():
     print("""
@@ -377,7 +397,7 @@ def os_banner():
         [?] Sistem Operasi Tidak Teridentifikasi
         """, "magenta")
 
-# ====== [NEW] 1. Interactive Cyber Quiz Module ======
+# ====== 1. Interactive Cyber Quiz Module ======
 QUIZ_QUESTIONS = [
     {
         "q": "Serangan social engineering yang memanipulasi korban melalui email tiruan institusi resmi disebut?",
@@ -452,39 +472,38 @@ QUIZ_QUESTIONS = [
 ]
 
 def cyber_quiz():
-    print(color("\n╔═══════════════════════════════════════════════════════════════════╗", "cyan"))
-    print(f"║ {color('🎓 CYBER EDUCATION INTERACTIVE QUIZ', 'yellow'):<75}║")
-    print(color("╚═══════════════════════════════════════════════════════════════════╝", "cyan"))
+    print(color("\n+===================================================================+", "cyan"))
+    print(f"| {color('[*] CYBER EDUCATION INTERACTIVE QUIZ', 'yellow')}")
+    print(color("+===================================================================+", "cyan"))
     print(color("Uji pemahaman keamanan siber Anda! Dapatkan XP dan Badge prestisius.\n", "white"))
 
     score = 0
-    total = 5 # Mainkan 5 pertanyaan acak per sesi
+    total = 5
     selected_questions = random.sample(QUIZ_QUESTIONS, min(total, len(QUIZ_QUESTIONS)))
 
     for i, q in enumerate(selected_questions, 1):
-        print(color(f"┌─ Soal {i}/{total} ───────────────────────────────────────────────────", "magenta"))
-        print(f"│ {color(q['q'], 'bold')}")
-        print("│")
+        print(color(f"+-- Soal {i}/{total} ---------------------------------------------------+", "magenta"))
+        print(f"  {color(q['q'], 'bold')}\n")
         for opt in q["options"]:
-            print(f"│  {opt}")
-        print(color("└──────────────────────────────────────────────────────────────", "magenta"))
+            print(f"   {opt}")
+        print(color("+-------------------------------------------------------------------+", "magenta"))
 
-        ans = input(color("👉 Jawaban Anda [A/B/C/D]: ", "yellow")).strip().upper()
+        ans = input(color(">> Jawaban Anda [A/B/C/D]: ", "yellow")).strip().upper()
 
         if ans == q["answer"]:
             score += 1
-            print(color("✅ JAWABAN BENAR! (+20 XP)", "green"))
+            print(color("[+] JAWABAN BENAR! (+20 XP)", "green"))
             play_beep(1500, 70)
         else:
-            print(color(f"❌ SALAH! Jawaban yang benar adalah: {q['answer']}", "red"))
+            print(color(f"[-] SALAH! Jawaban yang benar adalah: {q['answer']}", "red"))
             play_beep(600, 100)
 
-        print(color(f"💡 Penjelasan: {q['explanation']}\n", "gray"))
+        print(color(f"[!] Penjelasan: {q['explanation']}\n", "gray"))
         time.sleep(0.3)
 
     percent = int((score / total) * 100)
     xp_earned = score * 20
-    print(color("═══════════════════════════════════════════════════════════════════", "cyan"))
+    print(color("=====================================================================", "cyan"))
     print(f" Hasil Kuis : {score}/{total} Soal Benar ({percent}%)")
     
     p = load_profile()
@@ -497,13 +516,13 @@ def cyber_quiz():
     unlock_badge("quiz_cadet")
 
     if percent == 100:
-        print(color("🌟 LUAR BIASA! Nilai Sempurna 100%! 🌟", "yellow"))
+        print(color("[!] LUAR BIASA! Nilai Sempurna 100%!", "yellow"))
         unlock_badge("quiz_master")
 
-# ====== [NEW] 2. Interactive Cheat Sheet / Terminal Wiki ======
+# ====== 2. Interactive Cheat Sheet / Terminal Wiki ======
 TERMINAL_DOCS = {
     "linux": {
-        "title": "🐧 Linux & Bash Essentials",
+        "title": "[ Linux & Bash Essentials ]",
         "content": """
 [ File & Navigasi ]
   ls -la               : Tampilkan semua file termasuk hidden file & permission
@@ -526,7 +545,7 @@ TERMINAL_DOCS = {
 """
     },
     "network": {
-        "title": "🌐 Network & Ports Cheat Sheet",
+        "title": "[ Network & Ports Cheat Sheet ]",
         "content": """
 [ Port Standar Penting ]
   21  : FTP (File Transfer Protocol - Cleartext)
@@ -549,7 +568,7 @@ TERMINAL_DOCS = {
 """
     },
     "owasp": {
-        "title": "🛡️ OWASP Top 10 Web Vulnerabilities",
+        "title": "[ OWASP Top 10 Web Vulnerabilities ]",
         "content": """
 1. Broken Access Control: Pengguna dapat mengakses resource di luar izinnya (contoh: IDOR).
    Mitigasi: Terapkan otorisasi ketat di backend, jangan percaya parameter ID dari client.
@@ -574,7 +593,7 @@ TERMINAL_DOCS = {
 """
     },
     "crypto": {
-        "title": "🔐 Cryptography & Hashing Fundamentals",
+        "title": "[ Cryptography & Hashing Fundamentals ]",
         "content": """
 [ Konsep Dasar ]
 - Encoding (Base64, Hex): Mengubah format data agar mudah ditransmisikan. BUKAN keamanan!
@@ -591,7 +610,7 @@ TERMINAL_DOCS = {
 """
     },
     "git": {
-        "title": "🐙 Git Commands Quick Reference",
+        "title": "[ Git Commands Quick Reference ]",
         "content": """
 [ Manajemen Repository ]
   git init             : Inisialisasi repo git baru
@@ -614,9 +633,9 @@ TERMINAL_DOCS = {
 
 def terminal_docs(selected_topic=None):
     if not selected_topic:
-        print(color("\n╔═══════════════════════════════════════════════════════════════════╗", "cyan"))
-        print(f"║ {color('📖 INTERACTIVE TERMINAL WIKI & CHEAT SHEET', 'yellow'):<75}║")
-        print(color("╚═══════════════════════════════════════════════════════════════════╝", "cyan"))
+        print(color("\n+===================================================================+", "cyan"))
+        print(f"| {color('[*] INTERACTIVE TERMINAL WIKI & CHEAT SHEET', 'yellow')}")
+        print(color("+===================================================================+", "cyan"))
         print("Pilih topik dokumentasi yang ingin dipelajari:")
         print("  [1] Linux & Bash Essentials (linux)")
         print("  [2] Network & Ports Cheat Sheet (network)")
@@ -629,10 +648,10 @@ def terminal_docs(selected_topic=None):
 
     doc = TERMINAL_DOCS.get(selected_topic)
     if not doc:
-        print(color(f"❌ Topik '{selected_topic}' tidak ditemukan! Pilihan: linux, network, owasp, crypto, git", "red"))
+        print(color(f"[-] Topik '{selected_topic}' tidak ditemukan! Pilihan: linux, network, owasp, crypto, git", "red"))
         return
 
-    print(color(f"\n═══ {doc['title']} ═══", "green"))
+    print(color(f"\n=== {doc['title']} ===", "green"))
     print(color(doc["content"], "white"))
 
     p = load_profile()
@@ -644,13 +663,13 @@ def terminal_docs(selected_topic=None):
         add_xp(15, f"Membaca Dokumen {selected_topic.upper()}")
         unlock_badge("cyber_scholar")
 
-# ====== [NEW] 3. Advanced Password Health & Brute-force Checker ======
+# ====== 3. Advanced Password Health & Brute-force Checker ======
 def calculate_crack_time(combinations, speed_per_sec):
     if speed_per_sec <= 0:
         return "Unknown"
     seconds = combinations / speed_per_sec
     if seconds < 0.001:
-        return "< 1 milidetik (Instan ⚡)"
+        return "< 1 milidetik (Instan)"
     elif seconds < 1:
         return f"{seconds*1000:.1f} milidetik"
     elif seconds < 60:
@@ -667,18 +686,18 @@ def calculate_crack_time(combinations, speed_per_sec):
         return f"{seconds/(31536000*1000):.1f} ribu tahun"
     else:
         trillions = seconds / (31536000 * 10**12)
-        return f"{trillions:.2e} Triliun Tahun 🔒"
+        return f"{trillions:.2e} Triliun Tahun"
 
 def password_health_checker(pwd=None):
-    print(color("\n╔═══════════════════════════════════════════════════════════════════╗", "cyan"))
-    print(f"║ {color('🛡️ ADVANCED PASSWORD HEALTH & BRUTE-FORCE CHECKER', 'yellow'):<75}║")
-    print(color("╚═══════════════════════════════════════════════════════════════════╝", "cyan"))
+    print(color("\n+===================================================================+", "cyan"))
+    print(f"| {color('[*] ADVANCED PASSWORD HEALTH & BRUTE-FORCE CHECKER', 'yellow')}")
+    print(color("+===================================================================+", "cyan"))
     
     if not pwd:
         pwd = input("Masukkan password untuk diuji: ")
 
     if not pwd:
-        print(color("Password tidak boleh kosong!", "red"))
+        print(color("[-] Password tidak boleh kosong!", "red"))
         return
 
     length = len(pwd)
@@ -693,11 +712,9 @@ def password_health_checker(pwd=None):
     if has_digits: pool_size += 10
     if has_symbols: pool_size += 32
 
-    # Entropy H = L * log2(R)
     entropy = length * math.log2(pool_size) if pool_size > 0 else 0
     total_combinations = pool_size ** length if pool_size > 0 else 0
 
-    # Common word checks
     COMMON_BAD = ["password", "123456", "admin", "qwerty", "iloveyou", "secret", "root", "pass123", "bismillah"]
     is_common = any(bad in pwd.lower() for bad in COMMON_BAD)
 
@@ -721,7 +738,6 @@ def password_health_checker(pwd=None):
         score = max(5, score - 40)
         feedback.append("Mengandung kata sandi pasaran yang umum ditebak")
 
-    # Grades
     if score >= 90 and entropy >= 60: grade, grade_color = "A+ (SUPER AMAN)", "green"
     elif score >= 75 and entropy >= 50: grade, grade_color = "A (KUAT)", "green"
     elif score >= 50: grade, grade_color = "B (SEDANG)", "yellow"
@@ -735,28 +751,27 @@ def password_health_checker(pwd=None):
     print(f"  Skor Keamanan    : {score}/100 -> Grade: {color(grade, grade_color)}")
 
     print(color("\n[+] Estimasi Waktu Retas (Brute-Force Cracking Time):", "yellow"))
-    print(f"  👉 Online Attack (100 req/detik)        : {calculate_crack_time(total_combinations, 100)}")
-    print(f"  👉 Standar PC / CPU (100 Ribu hash/detik): {calculate_crack_time(total_combinations, 100000)}")
-    print(f"  👉 Fast GPU Rig (100 Miliar hash/detik) : {calculate_crack_time(total_combinations, 100000000000)}")
-    print(f"  👉 Supercomputer Cluster (100 Triliun/s): {calculate_crack_time(total_combinations, 100000000000000)}")
+    print(f"  >> Online Attack (100 req/detik)        : {calculate_crack_time(total_combinations, 100)}")
+    print(f"  >> Standar PC / CPU (100 Ribu hash/detik): {calculate_crack_time(total_combinations, 100000)}")
+    print(f"  >> Fast GPU Rig (100 Miliar hash/detik) : {calculate_crack_time(total_combinations, 100000000000)}")
+    print(f"  >> Supercomputer Cluster (100 Triliun/s): {calculate_crack_time(total_combinations, 100000000000000)}")
 
     if feedback:
         print(color("\n[!] Rekomendasi Penguatan:", "cyan"))
         for fb in feedback:
-            print(f"  • {fb}")
+            print(f"  - {fb}")
 
-    p = load_profile()
     add_xp(10, "Password Health Check")
     unlock_badge("password_sentinel")
 
-# ====== [NEW] 4. User Progress & Status Dashboard ======
+# ====== 4. User Progress & Status Dashboard ======
 def progress_tracker():
     p = load_profile()
     lvl, title, next_xp = get_level_info(p["xp"])
     
-    print(color("\n╔═══════════════════════════════════════════════════════════════════╗", "cyan"))
-    print(f"║ {color('🏆 PROFIL & LEARNING PROGRESS DASHBOARD', 'yellow'):<75}║")
-    print(color("╚═══════════════════════════════════════════════════════════════════╝", "cyan"))
+    print(color("\n+===================================================================+", "cyan"))
+    print(f"| {color('[*] PROFIL & LEARNING PROGRESS DASHBOARD', 'yellow')}")
+    print(color("+===================================================================+", "cyan"))
     
     print(f"  Agent Name   : {color(p.get('username', 'CyberAgent'), 'bold')}")
     print(f"  Pangkat      : {color(f'Level {lvl} - {title}', 'green')}")
@@ -764,26 +779,26 @@ def progress_tracker():
     print(f"  Tools Digunakan: {p.get('tools_used', 0)} kali")
     print(f"  Kuis Selesai : {p.get('quizzes_completed', 0)} sesi (High Score: {p.get('quiz_high_score', 0)}%)")
     print(f"  Docs Dibaca  : {len(p.get('docs_read', []))} topik")
-    print(f"  Audio Effect : {'Aktif (ON) 🔊' if p.get('sound_enabled') else 'Nonaktif (OFF) 🔇'}")
+    print(f"  Audio Effect : {'Aktif (ON)' if p.get('sound_enabled') else 'Nonaktif (OFF)'}")
 
     print(color("\n[+] Koleksi Lencana (Virtual Badges):", "yellow"))
     unlocked = p.get("badges", [])
     for b_id, b_data in ALL_BADGES.items():
         if b_id in unlocked:
-            print(f"  ✅ {color(b_data['name'], 'green')} : {b_data['desc']}")
+            print(f"  [V] {color(b_data['name'], 'green')} : {b_data['desc']}")
         else:
-            print(f"  🔒 {color(b_data['name'], 'gray')} : {b_data['desc']}")
+            print(f"  [ ] {color(b_data['name'], 'gray')} : {b_data['desc']}")
 
 def toggle_sound():
     p = load_profile()
     p["sound_enabled"] = not p.get("sound_enabled", False)
     save_profile(p)
-    status = "AKTIF (ON) 🔊" if p["sound_enabled"] else "NONAKTIF (OFF) 🔇"
+    status = "AKTIF (ON)" if p["sound_enabled"] else "NONAKTIF (OFF)"
     print(color(f"\nPengaturan suara terminal berhasil diubah: {status}", "green"))
     if p["sound_enabled"]:
         play_beep(1500, 100)
 
-# ====== Existing Core Tools ======
+# ====== Core Features ======
 
 def system_info():
     print(color("\n[+] Info Sistem", "yellow"))
@@ -826,7 +841,7 @@ def checksum_file():
     print(color("\n[ Checksum File ]", "yellow"))
     path = input("Path file: ").strip('"\'')
     if not os.path.exists(path) or not os.path.isfile(path):
-        print(color("❌ File tidak ditemukan!", "red"))
+        print(color("[-] File tidak ditemukan!", "red"))
         return
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
@@ -851,7 +866,7 @@ def base64_tools():
         try:
             print("Decode:", base64.b64decode(teks.encode("utf-8")).decode(errors="ignore"))
         except Exception:
-            print(color("❌ Input bukan Base64 valid!", "red"))
+            print(color("[-] Input bukan Base64 valid!", "red"))
     else:
         print(color("Pilihan tidak valid!", "red"))
     add_xp(5, "Base64 Encoding")
@@ -919,9 +934,9 @@ def geoip_lookup():
             print("ASN        :", r.get("as"))
             add_xp(10, "GeoIP Lookup")
         else:
-            print(color(f"❌ Gagal lookup: {r.get('message', 'Unknown error')}", "red"))
+            print(color(f"[-] Gagal lookup: {r.get('message', 'Unknown error')}", "red"))
     except Exception as e:
-        print(color(f"❌ Error: {e}", "red"))
+        print(color(f"[-] Error: {e}", "red"))
 
 def http_headers():
     print(color("\n[ HTTP Header Viewer ]", "yellow"))
@@ -939,12 +954,12 @@ def http_headers():
             print(f"  {color(k, 'magenta')}: {v}")
         add_xp(10, "HTTP Header Analysis")
     except Exception as e:
-        print(color(f"❌ Error: {e}", "red"))
+        print(color(f"[-] Error: {e}", "red"))
 
 def virus_total():
     print(color("\n[ VirusTotal Scanner ]", "yellow"))
     if not VT_API_KEY:
-        print(color("⚠️ API Key VirusTotal belum diatur di config.json!", "red"))
+        print(color("[!] API Key VirusTotal belum diatur di config.json!", "red"))
         print("Silakan buat config.json dengan isi: {\"VT_API_KEY\": \"your_api_key_here\"}")
         return
     pilih = input("[1] Scan URL [2] Scan File Hash (MD5/SHA256): ")
@@ -971,9 +986,9 @@ def virus_total():
             print("Laporan Lengkap:", color(data.get("permalink"), "cyan"))
             add_xp(15, "VirusTotal Scan")
         else:
-            print(color("ℹ️ Data tidak ditemukan di database VirusTotal.", "yellow"))
+            print(color("[*] Data tidak ditemukan di database VirusTotal.", "yellow"))
     except Exception as e:
-        print(color(f"❌ Error VirusTotal API: {e}", "red"))
+        print(color(f"[-] Error VirusTotal API: {e}", "red"))
 
 def caesar_cipher():
     print(color("\n[ Caesar Cipher ]", "yellow"))
@@ -1001,7 +1016,7 @@ def list_files():
     print(color("\n[ List Files & Directory ]", "yellow"))
     path = input("Folder path (default .): ").strip() or "."
     if not os.path.exists(path):
-        print(color("❌ Folder tidak ditemukan!", "red"))
+        print(color("[-] Folder tidak ditemukan!", "red"))
         return
     try:
         entries = os.listdir(path)
@@ -1011,16 +1026,16 @@ def list_files():
             fp = os.path.join(path, f)
             if os.path.isfile(fp):
                 size = os.path.getsize(fp)
-                print(f"📄 [FILE] {f:<30} ({size:,} bytes)")
+                print(f"[FILE] {f:<30} ({size:,} bytes)")
             elif os.path.isdir(fp):
-                print(f"📁 [DIR]  {f:<30}")
+                print(f"[DIR]  {f:<30}")
         print("-" * 50)
     except Exception as e:
-        print(color(f"❌ Error: {e}", "red"))
+        print(color(f"[-] Error: {e}", "red"))
 
 def matrix_rain():
     print(color("\n[ Matrix Rain Effect ] (Tekan Ctrl+C untuk berhenti)", "green"))
-    chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEF0123456789"
+    chars = "01ABCDEF0123456789abcdefghijklmnopqrstuvwxyz"
     try:
         while True:
             line = "".join(random.choice(chars) if random.random() > 0.4 else " " for _ in range(78))
@@ -1031,8 +1046,8 @@ def matrix_rain():
 
 def binary_tools():
     print(color("\n[ Binary Tools ]", "yellow"))
-    print("[1] Text → Binary")
-    print("[2] Binary → Text")
+    print("[1] Text -> Binary")
+    print("[2] Binary -> Text")
     choice = input("Pilih: ")
     if choice == "1":
         text = input("Masukkan teks: ")
@@ -1045,7 +1060,7 @@ def binary_tools():
             text = "".join(chr(int(b, 2)) for b in tokens)
             print(color("Teks: ", "green") + text)
         except Exception:
-            print(color("❌ Format binary tidak valid!", "red"))
+            print(color("[-] Format binary tidak valid!", "red"))
     else:
         print(color("Pilihan tidak valid!", "red"))
     add_xp(5, "Binary Converter")
@@ -1068,9 +1083,9 @@ def sha256_tools():
                     file_hash.update(chunk)
             print(color("SHA256 File: ", "green") + file_hash.hexdigest())
         except FileNotFoundError:
-            print(color("❌ File tidak ditemukan", "red"))
+            print(color("[-] File tidak ditemukan", "red"))
         except Exception as e:
-            print(color(f"❌ Error: {e}", "red"))
+            print(color(f"[-] Error: {e}", "red"))
     else:
         print(color("Pilihan tidak valid", "red"))
     add_xp(5, "SHA256 Tools")
@@ -1096,7 +1111,7 @@ def scan_single_port(ip, port, timeout=0.8):
     return port, False, ""
 
 def port_scanner(target=None):
-    print(color("\n[ 🔍 Fast TCP Port Scanner ]", "yellow"))
+    print(color("\n[ Fast TCP Port Scanner ]", "yellow"))
     if not target:
         target = input("Masukkan target IP/Domain: ").strip()
     if not target:
@@ -1106,7 +1121,7 @@ def port_scanner(target=None):
         target_ip = socket.gethostbyname(target)
         print(f"Target: {target} ({color(target_ip, 'cyan')})")
     except socket.gaierror:
-        print(color("❌ Host tidak dapat diresolusi!", "red"))
+        print(color("[-] Host tidak dapat diresolusi!", "red"))
         return
 
     print("\n[1] Scan Port Populer (Top 21 Common Ports)")
@@ -1163,7 +1178,7 @@ def port_scanner(target=None):
     unlock_badge("port_hunter")
 
 def subnet_calculator(cidr_input=None):
-    print(color("\n[ 🌐 Subnet & IP CIDR Calculator ]", "yellow"))
+    print(color("\n[ Subnet & IP CIDR Calculator ]", "yellow"))
     if not cidr_input:
         cidr_input = input("Masukkan IP dengan CIDR (contoh: 192.168.1.50/24 atau 10.0.0.0/16): ").strip()
     if not cidr_input:
@@ -1197,10 +1212,10 @@ def subnet_calculator(cidr_input=None):
         add_xp(10, "Subnetting Analysis")
         unlock_badge("subnet_guru")
     except Exception as e:
-        print(color(f"❌ Input CIDR / Subnet tidak valid: {e}", "red"))
+        print(color(f"[-] Input CIDR / Subnet tidak valid: {e}", "red"))
 
 def hash_identifier(h=None):
-    print(color("\n[ 🔎 Hash Identifier & Analyzer ]", "yellow"))
+    print(color("\n[ Hash Identifier & Analyzer ]", "yellow"))
     if not h:
         h = input("Masukkan hash string: ").strip()
     if not h:
@@ -1255,9 +1270,9 @@ def hash_identifier(h=None):
     if possible:
         print(color("\n[+] Kemungkinan Jenis Algoritma Hash:", "green"))
         for algo, desc in possible:
-            print(f"  👉 {color(algo, 'bold'):<18} : {desc}")
+            print(f"  >> {color(algo, 'bold'):<18} : {desc}")
     else:
-        print(color("⚠️ Algoritma tidak dapat diidentifikasi secara pasti.", "yellow"))
+        print(color("[*] Algoritma tidak dapat diidentifikasi secara pasti.", "yellow"))
     add_xp(10, "Hash Analysis")
 
 def _base64url_decode(payload_str):
@@ -1267,7 +1282,7 @@ def _base64url_decode(payload_str):
     return base64.urlsafe_b64decode(payload_str.encode("utf-8")).decode("utf-8", errors="ignore")
 
 def jwt_decoder(token=None):
-    print(color("\n[ 🎫 JWT (JSON Web Token) Inspector ]", "yellow"))
+    print(color("\n[ JWT (JSON Web Token) Inspector ]", "yellow"))
     if not token:
         token = input("Masukkan JWT Token: ").strip()
     if not token:
@@ -1275,7 +1290,7 @@ def jwt_decoder(token=None):
 
     parts = token.split(".")
     if len(parts) != 3:
-        print(color("❌ Format JWT tidak valid! JWT harus terdiri dari 3 bagian (header.payload.signature).", "red"))
+        print(color("[-] Format JWT tidak valid! JWT harus terdiri dari 3 bagian (header.payload.signature).", "red"))
         return
 
     header_raw, payload_raw, signature = parts
@@ -1296,10 +1311,10 @@ def jwt_decoder(token=None):
             exp_ts = payload_json["exp"]
             exp_date = datetime.fromtimestamp(exp_ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
             if exp_ts < now_ts:
-                print(f"  Expired (exp) : {exp_date} -> {color('❌ TOKEN SUDAH KADALUARSA (EXPIRED)', 'red')}")
+                print(f"  Expired (exp) : {exp_date} -> {color('[-] TOKEN SUDAH KADALUARSA (EXPIRED)', 'red')}")
             else:
                 sisa_detik = int(exp_ts - now_ts)
-                print(f"  Expired (exp) : {exp_date} -> {color(f'✅ TOKEN MASIH AKTIF (Sisa ~{sisa_detik} detik)', 'green')}")
+                print(f"  Expired (exp) : {exp_date} -> {color(f'[+] TOKEN MASIH AKTIF (Sisa ~{sisa_detik} detik)', 'green')}")
         else:
             print("  Expired (exp) : Tidak ada klaim 'exp' (Token tidak punya batas waktu)")
 
@@ -1316,10 +1331,10 @@ def jwt_decoder(token=None):
         print(f"\nSignature (Base64URL): {signature[:20]}... [Truncated]")
         add_xp(10, "JWT Inspection")
     except Exception as e:
-        print(color(f"❌ Gagal mendekode JWT: {e}", "red"))
+        print(color(f"[-] Gagal mendekode JWT: {e}", "red"))
 
 def url_defanger(raw=None):
-    print(color("\n[ 🛡️ URL / IP Defanger & Refanger (SOC / Threat Intel) ]", "yellow"))
+    print(color("\n[ URL / IP Defanger & Refanger (Threat Intel) ]", "yellow"))
     print("[1] Defang (Ubah URL/IP agar aman dibagikan, misal https://malware.com -> hxxps://malware[.]com)")
     print("[2] Refang (Kembalikan ke URL/IP asli)")
     choice = input("Pilih (default 1): ").strip() or "1"
@@ -1343,7 +1358,7 @@ def url_defanger(raw=None):
     add_xp(5, "Threat Intel Defang")
 
 def vigenere_cipher():
-    print(color("\n[ 🔐 Vigenère Cipher (Polyalphabetic Substitution) ]", "yellow"))
+    print(color("\n[ Vigenere Cipher (Polyalphabetic Substitution) ]", "yellow"))
     mode = input("[E]ncrypt / [D]ecrypt : ").lower()
     if mode not in ["e", "d"]:
         print(color("Pilihan mode tidak valid!", "red"))
@@ -1352,7 +1367,7 @@ def vigenere_cipher():
     text = input("Masukkan teks: ")
     key = input("Masukkan kata kunci (key huruf): ").strip()
     if not key.isalpha():
-        print(color("❌ Kunci harus berupa huruf alfabet!", "red"))
+        print(color("[-] Kunci harus berupa huruf alfabet!", "red"))
         return
 
     key = key.upper()
@@ -1383,9 +1398,9 @@ def vigenere_cipher():
     unlock_badge("crypto_adept")
 
 def dns_lookup():
-    print(color("\n[ 📡 DNS & Reverse DNS Resolver ]", "yellow"))
-    print("[1] Forward DNS (Domain → IP Address / A & AAAA)")
-    print("[2] Reverse DNS (IP Address → PTR Hostname)")
+    print(color("\n[ DNS & Reverse DNS Resolver ]", "yellow"))
+    print("[1] Forward DNS (Domain -> IP Address / A & AAAA)")
+    print("[2] Reverse DNS (IP Address -> PTR Hostname)")
     choice = input("Pilih: ")
 
     if choice == "1":
@@ -1402,10 +1417,10 @@ def dns_lookup():
 
             print(color(f"\n[+] Hasil DNS Record untuk '{domain}':", "green"))
             for ip, fam in sorted(ip_set, key=lambda x: x[1]):
-                print(f"  👉 [{fam}] {ip}")
+                print(f"  >> [{fam}] {ip}")
             add_xp(10, "Forward DNS Lookup")
         except socket.gaierror as e:
-            print(color(f"❌ Gagal DNS lookup: {e}", "red"))
+            print(color(f"[-] Gagal DNS lookup: {e}", "red"))
 
     elif choice == "2":
         ip = input("Masukkan IP Address: ").strip()
@@ -1419,7 +1434,7 @@ def dns_lookup():
                 print(f"  Aliases  : {', '.join(aliases)}")
             add_xp(10, "Reverse DNS Lookup")
         except Exception as e:
-            print(color(f"❌ Reverse lookup gagal: {e}", "red"))
+            print(color(f"[-] Reverse lookup gagal: {e}", "red"))
     else:
         print(color("Pilihan tidak valid!", "red"))
 
@@ -1428,7 +1443,7 @@ def konoha_easter_egg():
            .-'""'-.
          .'        `.
         /   .-""-.   \
-       /   /  🌀  \   \
+       /   /  (O) \   \
       |   | KONOHA |   |
       |   |VILLAGE |   |
        \   \      /   /
@@ -1436,8 +1451,8 @@ def konoha_easter_egg():
          `.        .'
            '-....-'
 
-🔥 Selamat datang di Desa Daun Tersembunyi (Konoha)! 🔥
-Tekad Api membara di setiap baris kode Cyber Edu CLI! 🍃🌀
+[!] Selamat datang di Desa Daun Tersembunyi (Konoha)!
+Tekad Api membara di setiap baris kode Cyber Edu CLI!
 """, "green"))
     add_xp(25, "Menemukan Easter Egg Konoha")
     unlock_badge("first_blood")
@@ -1527,7 +1542,6 @@ def menu():
         "hokage": konoha_easter_egg
     }
 
-    # Play boot sequence on startup
     cyber_boot_animation()
     cyber_quote_generator()
     unlock_badge("first_blood")
@@ -1535,49 +1549,49 @@ def menu():
     while True:
         p = load_profile()
         lvl, title, _ = get_level_info(p["xp"])
-        sound_ico = "🔊 ON" if p.get("sound_enabled") else "🔇 OFF"
+        sound_ico = "ON" if p.get("sound_enabled") else "OFF"
 
         banner()
-        print(color(f" 👤 Agent: {p['username']} | 🎖️ Lvl {lvl} ({title}) | 💎 XP: {p['xp']} | Audio: {sound_ico}", "green"))
+        print(color(f" [+] Agent: {p['username']} | Pangkat: Lvl {lvl} ({title}) | XP: {p['xp']} | Audio: {sound_ico}", "green"))
         print(color("""
- ─── 🎓 MODUL EDUKASI & GAMIFIKASI ─────────────────────────────────────────
- [25] 🎓 Cyber Quiz (Kuis Interaktif)   [27] 🏆 Profil, Level & Badges
- [26] 📖 Terminal Wiki & Cheat Sheet   [28] 💬 Cyber Quote of the Day
+ +-- [ MODUL EDUKASI & GAMIFIKASI ] ----------------------------------------+
+  [25] Cyber Quiz (Kuis Interaktif)   [27] Profil, Level & Badges
+  [26] Terminal Wiki & Cheat Sheet    [28] Cyber Quote of the Day
  
- ─── 🌐 JARINGAN & RECONNAISSANCE ──────────────────────────────────────────
- [18] 🔍 Fast TCP Port Scanner          [10] 🛰️ GeoIP Lookup
- [19] 🌐 Subnet & CIDR Calculator       [11] 🌐 HTTP Header Viewer
- [24] 📡 DNS & Reverse DNS Resolver     [9]  📡 Ping Host
+ +-- [ JARINGAN & RECONNAISSANCE ] -----------------------------------------+
+  [18] Fast TCP Port Scanner          [10] GeoIP Lookup
+  [19] Subnet & CIDR Calculator       [11] HTTP Header Viewer
+  [24] DNS & Reverse DNS Resolver     [9]  Ping Host
  
- ─── 🔐 KRIPTOGRAFI & KEAMANAN DATA ────────────────────────────────────────
- [2]  🔑 Hashing Multi-Algoritma        [13] 🔏 Caesar Cipher
- [3]  📂 Checksum File (Integritas)     [23] 🔐 Vigenère Cipher
- [17] 🔒 Dedicated SHA256 Tools         [7]  🛡️ Password Health & Crack Time
- [20] 🔎 Hash Identifier / Analyzer     [6]  🎲 Password Generator
+ +-- [ KRIPTOGRAFI & KEAMANAN DATA ] ---------------------------------------+
+  [2]  Hashing Multi-Algoritma        [13] Caesar Cipher
+  [3]  Checksum File (Integritas)     [23] Vigenere Cipher
+  [17] Dedicated SHA256 Tools         [7]  Password Health & Crack Time
+  [20] Hash Identifier / Analyzer     [6]  Password Generator
  
- ─── 🛠️ ENKODING & THREAT INTEL ────────────────────────────────────────────
- [21] 🎫 JWT Token Inspector            [4]  🔐 Base64 Tools
- [22] 🛡️ URL/IP Defanger (Threat Intel) [5]  🌍 URL Encode/Decode
- [12] 🛡️ VirusTotal Scanner             [16] 💾 Binary (Text ↔ Binary)
+ +-- [ ENKODING & THREAT INTEL ] -------------------------------------------+
+  [21] JWT Token Inspector            [4]  Base64 Tools
+  [22] URL/IP Defanger (Threat Intel) [5]  URL Encode/Decode
+  [12] VirusTotal Scanner             [16] Binary (Text <-> Binary)
  
- ─── 💻 SISTEM & UTILITAS ──────────────────────────────────────────────────
- [1]  🖥️ Info Sistem & OS Banner        [15] 💻 Matrix Rain Effect
- [8]  🆔 UUID Generator                 [14] 📁 List Files & Size
- [29] 🔊 Toggle Audio / Sound Beep      [0]  🚪 Keluar / Exit
- ───────────────────────────────────────────────────────────────────────────
+ +-- [ SISTEM & UTILITAS ] -------------------------------------------------+
+  [1]  Info Sistem & OS Banner        [15] Matrix Rain Effect
+  [8]  UUID Generator                 [14] List Files & Size
+  [29] Toggle Audio / Sound Beep      [0]  Keluar / Exit
+ +--------------------------------------------------------------------------+
 """, "cyan"))
 
         pilih = input(color("Pilih menu [0-29]: ", "yellow")).strip().lower()
 
         if pilih in ["0", "exit", "quit", "q"]:
-            print(color("\nTerima kasih telah belajar bersama Cyber Edu CLI! Tetap aman & etis 👋", "green"))
+            print(color("\nTerima kasih telah belajar bersama Cyber Edu CLI! Tetap aman & etis.", "green"))
             sys.exit(0)
 
         func = opsi.get(pilih)
         if func:
             func()
         else:
-            print(color("❌ Pilihan menu tidak valid!", "red"))
+            print(color("[-] Pilihan menu tidak valid!", "red"))
 
         input(color("\nTekan Enter untuk kembali ke menu utama...", "white"))
 

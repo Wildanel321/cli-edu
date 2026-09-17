@@ -1,4 +1,5 @@
 config.json
+user_profile.json
 __pycache__/
 venv/
 *.pyc
