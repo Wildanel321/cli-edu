@@ -1,0 +1,17 @@
+{
+  "username": "CyberAgent",
+  "xp": 30,
+  "level": 1,
+  "sound_enabled": false,
+  "quizzes_completed": 1,
+  "quiz_high_score": 20,
+  "tools_used": 2,
+  "badges": [
+    "password_sentinel",
+    "cyber_scholar",
+    "quiz_cadet"
+  ],
+  "docs_read": [
+    "linux"
+  ]
+}
